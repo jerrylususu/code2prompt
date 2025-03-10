@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Git Repository Text Representation</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- JSZip for handling ZIP files -->
+    <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+    <!-- TikToken for token counting -->
+    <script src="https://cdn.jsdelivr.net/npm/tiktoken-node@0.0.6/dist/tiktoken.min.js"></script>
+    <!-- FileSaver for saving text files -->
+    <script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+    <!-- Highlight.js for code syntax highlighting -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.8.0/styles/github.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.8.0/highlight.min.js"></script>
+    <!-- Monaco Editor -->
+    <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs/loader.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Git Repository Text Representation</h1>
+            <p>Create a text representation of a Git repository for use with LLMs</p>
+        </header>
+
+        <main>
+            <section class="input-section">
+                <div class="input-methods">
+                    <!-- GitHub URL input hidden due to CORS issues -->
+                    <!--
+                    <div class="input-method">
+                        <h2>GitHub URL</h2>
+                        <div class="input-group">
+                            <input type="text" id="github-url" placeholder="Enter GitHub repository URL (e.g., https://github.com/username/repo)">
+                            <button id="download-btn">Download</button>
+                        </div>
+                    </div>
+                    -->
+                    <div class="input-method">
+                        <h2>Upload ZIP</h2>
+                        <div class="input-group">
+                            <input type="file" id="zip-upload" accept=".zip">
+                        </div>
+                        <p class="input-help">Upload a ZIP file of a Git repository</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="status-section" class="status-section hidden">
+                <h2>Status</h2>
+                <div id="status-display">
+                    <div id="status-message">Ready</div>
+                    <div id="progress-container" class="hidden">
+                        <div id="progress-bar"></div>
+                        <div id="progress-info">0%</div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="file-tree-section" class="file-tree-section hidden">
+                <h2>Repository Files</h2>
+                <div class="file-tree-controls">
+                    <button id="select-all-btn">Select All</button>
+                    <button id="deselect-all-btn">Deselect All</button>
+                    <button id="invert-selection-btn">Invert Selection</button>
+                    <div class="binary-files-control">
+                        <input type="checkbox" id="exclude-binary-files" checked>
+                        <label for="exclude-binary-files">Exclude binary files (images, videos, etc.)</label>
+                    </div>
+                    <button id="generate-btn" class="primary-btn">Generate Text</button>
+                </div>
+                <div id="estimated-token-count" class="estimated-token-count">Estimated token count: 0</div>
+                <div id="file-tree" class="file-tree"></div>
+            </section>
+
+            <section id="result-section" class="result-section hidden">
+                <h2>Result</h2>
+                <div class="result-info">
+                    <div id="token-estimate">Estimated tokens: 0</div>
+                    <div class="result-actions">
+                        <button id="copy-btn">Copy to Clipboard</button>
+                        <button id="download-text-btn">Download as Text</button>
+                    </div>
+                </div>
+                <div id="result-display" class="result-display"></div>
+            </section>
+        </main>
+
+        <footer>
+            <p>Created for LLM interaction - No build steps required</p>
+        </footer>
+    </div>
+
+    <!-- Monaco Editor Modal -->
+    <div id="editor-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="editor-file-name">File Preview</h3>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div id="monaco-editor-container"></div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

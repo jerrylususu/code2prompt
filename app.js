@@ -26,6 +26,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const editorFileName = document.getElementById('editor-file-name');
     const closeModalBtn = document.querySelector('.close-modal');
     const monacoEditorContainer = document.getElementById('monaco-editor-container');
+    const themeToggleCheckbox = document.getElementById('theme-toggle-checkbox');
+    const highlightThemeLink = document.getElementById('highlight-theme');
     
     // Variables
     let repoFiles = [];
@@ -33,6 +35,71 @@ document.addEventListener('DOMContentLoaded', () => {
     let resultText = '';
     let monacoEditor = null;
     let monacoEditorLoaded = false;
+    
+    // Theme handling
+    function initTheme() {
+        // Check for saved theme preference
+        const savedTheme = localStorage.getItem('theme');
+        
+        // Check for system preference if no saved theme
+        if (!savedTheme) {
+            const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            if (prefersDarkScheme) {
+                document.documentElement.classList.add('dark-theme');
+                themeToggleCheckbox.checked = true;
+                updateHighlightTheme(true);
+            }
+        } else if (savedTheme === 'dark') {
+            document.documentElement.classList.add('dark-theme');
+            themeToggleCheckbox.checked = true;
+            updateHighlightTheme(true);
+        }
+        
+        // Listen for system theme changes
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+            if (!localStorage.getItem('theme')) {
+                const isDarkMode = e.matches;
+                document.documentElement.classList.toggle('dark-theme', isDarkMode);
+                themeToggleCheckbox.checked = isDarkMode;
+                updateHighlightTheme(isDarkMode);
+                
+                // Update Monaco editor theme if it's loaded
+                if (monacoEditor) {
+                    monaco.editor.setTheme(isDarkMode ? 'vs-dark' : 'vs');
+                }
+            }
+        });
+    }
+    
+    function updateHighlightTheme(isDark) {
+        highlightThemeLink.href = isDark 
+            ? 'https://cdn.jsdelivr.net/npm/highlight.js@11.8.0/styles/github-dark.min.css'
+            : 'https://cdn.jsdelivr.net/npm/highlight.js@11.8.0/styles/github.min.css';
+            
+        // Re-highlight any existing code
+        if (resultText) {
+            displayResult();
+        }
+    }
+    
+    // Theme toggle event listener
+    if (themeToggleCheckbox) {
+        themeToggleCheckbox.addEventListener('change', function() {
+            const isDarkMode = this.checked;
+            document.documentElement.classList.toggle('dark-theme', isDarkMode);
+            
+            // Save preference to localStorage
+            localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
+            
+            // Update highlight.js theme
+            updateHighlightTheme(isDarkMode);
+            
+            // Update Monaco editor theme if it's loaded
+            if (monacoEditor) {
+                monaco.editor.setTheme(isDarkMode ? 'vs-dark' : 'vs');
+            }
+        });
+    }
     
     // Event listeners
     if (downloadBtn) {
@@ -70,7 +137,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (downloadTextBtn) {
         downloadTextBtn.addEventListener('click', downloadAsText);
     }
-
+    
     // GitHub URL handling
     async function handleGithubDownload() {
         const url = githubUrlInput.value.trim();
@@ -709,21 +776,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initialize Monaco Editor
     function initMonacoEditor() {
-        if (monacoEditorLoaded) return Promise.resolve();
+        if (monacoEditorLoaded) return;
         
-        return new Promise((resolve) => {
-            // Define the require path
-            require.config({ 
-                paths: { 
-                    'vs': 'https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs' 
-                }
-            });
+        require.config({ paths: { 'vs': 'https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs' }});
+        require(['vs/editor/editor.main'], function() {
+            monacoEditorLoaded = true;
             
-            // Load Monaco
-            require(['vs/editor/editor.main'], function() {
-                monacoEditorLoaded = true;
-                resolve();
-            });
+            // Set the theme based on current mode
+            const isDarkMode = document.documentElement.classList.contains('dark-theme');
+            monaco.editor.setTheme(isDarkMode ? 'vs-dark' : 'vs');
         });
     }
     
@@ -1263,6 +1324,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initialize
     function init() {
+        initTheme();
         // Hide sections initially
         statusSection.classList.add('hidden');
         fileTreeSection.classList.add('hidden');

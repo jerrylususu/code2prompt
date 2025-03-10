@@ -8,12 +8,34 @@
     --success-color: #28a745;
     --danger-color: #d73a49;
     --warning-color: #f1c40f;
+    
+    /* Light theme specific */
+    --card-background: white;
+    --hover-background: #f0f0f0;
+    --shadow-color: rgba(0, 0, 0, 0.1);
+}
+
+:root.dark-theme {
+    --primary-color: #58a6ff;
+    --secondary-color: #c9d1d9;
+    --background-color: #0d1117;
+    --border-color: #30363d;
+    --text-color: #c9d1d9;
+    --success-color: #3fb950;
+    --danger-color: #f85149;
+    --warning-color: #d29922;
+    
+    /* Dark theme specific */
+    --card-background: #161b22;
+    --hover-background: #21262d;
+    --shadow-color: rgba(0, 0, 0, 0.3);
 }
 
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
 
 body {
@@ -44,13 +66,13 @@ button {
     padding: 0.5rem 1rem;
     border: 1px solid var(--border-color);
     border-radius: 4px;
-    background-color: #fff;
+    background-color: var(--card-background);
     font-size: 0.9rem;
     transition: all 0.2s;
 }
 
 button:hover {
-    background-color: var(--background-color);
+    background-color: var(--hover-background);
 }
 
 .primary-btn {
@@ -69,11 +91,15 @@ input[type="text"] {
     border-radius: 4px;
     font-size: 0.9rem;
     width: 100%;
+    background-color: var(--card-background);
+    color: var(--text-color);
 }
 
 input[type="file"] {
     padding: 0.5rem 0;
     font-size: 0.9rem;
+    background-color: var(--card-background);
+    color: var(--text-color);
 }
 
 .hidden {
@@ -83,7 +109,7 @@ input[type="file"] {
 /* Input section */
 .input-section {
     margin-bottom: 2rem;
-    background-color: white;
+    background-color: var(--card-background);
     border: 1px solid var(--border-color);
     border-radius: 6px;
     padding: 1.5rem;
@@ -130,7 +156,7 @@ input[type="file"] {
 /* Status section */
 .status-section {
     margin-bottom: 2rem;
-    background-color: white;
+    background-color: var(--card-background);
     border: 1px solid var(--border-color);
     border-radius: 6px;
     padding: 1.5rem;
@@ -176,7 +202,7 @@ input[type="file"] {
 /* File tree section */
 .file-tree-section {
     margin-bottom: 2rem;
-    background-color: white;
+    background-color: var(--card-background);
     border: 1px solid var(--border-color);
     border-radius: 6px;
     padding: 1.5rem;
@@ -326,7 +352,7 @@ input[type="file"] {
 
 /* Result section */
 .result-section {
-    background-color: white;
+    background-color: var(--card-background);
     border: 1px solid var(--border-color);
     border-radius: 6px;
     padding: 1.5rem;
@@ -465,4 +491,110 @@ footer {
         flex-direction: column;
         align-items: flex-start;
     }
+}
+
+/* Theme toggle */
+.theme-toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.theme-toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 24px;
+}
+
+.theme-toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.theme-toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 24px;
+}
+
+.theme-toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked + .theme-toggle-slider {
+    background-color: var(--primary-color);
+}
+
+input:focus + .theme-toggle-slider {
+    box-shadow: 0 0 1px var(--primary-color);
+}
+
+input:checked + .theme-toggle-slider:before {
+    transform: translateX(26px);
+}
+
+.theme-toggle-icon {
+    font-size: 16px;
+}
+
+/* Dark theme adjustments for code highlighting */
+.dark-theme .hljs {
+    background-color: #1e1e1e;
+    color: #d4d4d4;
+}
+
+.dark-theme .modal-content {
+    background-color: var(--card-background);
+    color: var(--text-color);
+    border-color: var(--border-color);
+}
+
+.dark-theme .close-modal {
+    color: var(--text-color);
+}
+
+.dark-theme .file-item:hover {
+    background-color: var(--hover-background);
+}
+
+.dark-theme .folder-item:hover {
+    background-color: var(--hover-background);
+}
+
+.dark-theme input[type="text"],
+.dark-theme input[type="file"] {
+    background-color: var(--card-background);
+    color: var(--text-color);
+    border-color: var(--border-color);
+}
+
+.dark-theme button {
+    background-color: var(--card-background);
+    color: var(--text-color);
+    border-color: var(--border-color);
+}
+
+.dark-theme .primary-btn {
+    background-color: var(--primary-color);
+    color: white;
 }

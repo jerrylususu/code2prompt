@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Git Repository Text Representation</title>
+    <title>code2prompt</title>
     <link rel="stylesheet" href="styles.css">
     <!-- JSZip for handling ZIP files -->
     <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
@@ -12,7 +12,7 @@
     <!-- FileSaver for saving text files -->
     <script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
     <!-- Highlight.js for code syntax highlighting -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.8.0/styles/github.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.8.0/styles/github.min.css" id="highlight-theme">
     <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.8.0/highlight.min.js"></script>
     <!-- Monaco Editor -->
     <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs/loader.js"></script>
@@ -20,9 +20,19 @@
 <body>
     <div class="container">
         <header>
-            <h1>Git Repository Text Representation</h1>
+            <h1>code2prompt</h1>
             <p>Create a text representation of a Git repository for use with LLMs</p>
         </header>
+
+        <!-- Theme Toggle -->
+        <div class="theme-toggle">
+            <span class="theme-toggle-icon">☀️</span>
+            <label class="theme-toggle-switch">
+                <input type="checkbox" id="theme-toggle-checkbox">
+                <span class="theme-toggle-slider"></span>
+            </label>
+            <span class="theme-toggle-icon">🌙</span>
+        </div>
 
         <main>
             <section class="input-section">

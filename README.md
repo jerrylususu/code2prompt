@@ -1,6 +1,16 @@
-# Git Repository Text Representation
+# code2prompt
 
 A web application that creates a text representation of a Git repository for use with Large Language Models (LLMs). This tool allows you to convert a GitHub repository into a structured text format that can be easily pasted into an LLM.
+
+## ⚠️ Caution
+
+**Important**: This repository itself was built by an LLM and should not be used in production environments without thorough review and testing. LLM-generated code may contain:
+- Security vulnerabilities
+- Logical errors
+- Outdated practices
+- Incomplete implementations
+
+Always review, test, and validate any LLM-generated code before using it in a production environment.
 
 ## Features
 
@@ -14,7 +24,7 @@ A web application that creates a text representation of a Git repository for use
 ## How to Use
 
 1. **Input a Repository**:
-   - Enter a GitHub repository URL (e.g., `https://github.com/username/repo`) and click "Download"
+   <!-- - Enter a GitHub repository URL (e.g., `https://github.com/username/repo`) and click "Download" -->
    - OR upload a ZIP file of a Git repository
 
 2. **Select Files**:

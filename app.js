@@ -776,15 +776,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initialize Monaco Editor
     function initMonacoEditor() {
-        if (monacoEditorLoaded) return;
+        if (monacoEditorLoaded) return Promise.resolve();
         
-        require.config({ paths: { 'vs': 'https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs' }});
-        require(['vs/editor/editor.main'], function() {
-            monacoEditorLoaded = true;
-            
-            // Set the theme based on current mode
-            const isDarkMode = document.documentElement.classList.contains('dark-theme');
-            monaco.editor.setTheme(isDarkMode ? 'vs-dark' : 'vs');
+        return new Promise((resolve) => {
+            require.config({ paths: { 'vs': 'https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs' }});
+            require(['vs/editor/editor.main'], function() {
+                monacoEditorLoaded = true;
+                
+                // Set the theme based on current mode
+                const isDarkMode = document.documentElement.classList.contains('dark-theme');
+                monaco.editor.setTheme(isDarkMode ? 'vs-dark' : 'vs');
+                
+                resolve();
+            });
         });
     }
     

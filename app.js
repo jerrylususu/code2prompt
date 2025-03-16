@@ -1057,6 +1057,11 @@ document.addEventListener('DOMContentLoaded', () => {
         return languageMap[extension] || '';
     }
     
+    // Get token counting method (tokenizer or length-based)
+    function getTokenCountMethod() {
+        return typeof GPTTokenizer_cl100k_base !== 'undefined' ? 'tokenizer' : 'length-based';
+    }
+
     // Display the result with syntax highlighting
     function displayResult() {
         // Set the content
@@ -1064,7 +1069,8 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Estimate tokens
         const tokenCount = estimateTokenCount(resultText);
-        estimatedTokenCount.textContent = `Estimated tokens: ${tokenCount.toLocaleString()}`;
+        const method = getTokenCountMethod();
+        tokenEstimate.textContent = `Estimated tokens: ${tokenCount.toLocaleString()} (${method})`;
     }
     
     // Escape HTML special characters
@@ -1077,15 +1083,16 @@ document.addEventListener('DOMContentLoaded', () => {
             .replace(/'/g, '&#039;');
     }
     
-    // Estimate token count using tiktoken
+    // Estimate token count using gpt-tokenizer or fallback
     function estimateTokenCount(text) {
         try {
-            // Try to use tiktoken if available
-            if (typeof tiktoken !== 'undefined') {
-                const encoding = tiktoken.encoding_for_model('gpt-4');
-                return encoding.encode(text).length;
+            // Try to use gpt-tokenizer if available
+            if (typeof GPTTokenizer_cl100k_base !== 'undefined') {
+                const { encode } = GPTTokenizer_cl100k_base;
+                return encode(text).length;
             } else {
-                // Fallback to rough estimation
+                // Fallback to rough estimation based on string length
+                console.error('GPT Tokenizer not available, falling back to string length estimation');
                 return Math.ceil(text.length / 4);
             }
         } catch (error) {
@@ -1100,12 +1107,13 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!content) return 0;
         
         try {
-            // Try to use tiktoken if available
-            if (typeof tiktoken !== 'undefined') {
-                const encoding = tiktoken.encoding_for_model('gpt-4');
-                return encoding.encode(content).length;
+            // Try to use gpt-tokenizer if available
+            if (typeof GPTTokenizer_cl100k_base !== 'undefined') {
+                const { encode } = GPTTokenizer_cl100k_base;
+                return encode(content).length;
             } else {
-                // Fallback to rough estimation
+                // Fallback to rough estimation based on string length
+                console.error('GPT Tokenizer not available, falling back to string length estimation');
                 return Math.ceil(content.length / 4);
             }
         } catch (error) {
@@ -1253,8 +1261,9 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
         
-        // Update token estimate display
-        estimatedTokenCount.textContent = `Estimated tokens: ${totalTokenCount}`;
+        // Update token estimate display with method information
+        const method = getTokenCountMethod();
+        estimatedTokenCount.textContent = `Estimated tokens: ${totalTokenCount.toLocaleString()} (${method})`;
     }
 
     // Update folder selected token counts based on file selection

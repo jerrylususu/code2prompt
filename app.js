@@ -28,6 +28,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const monacoEditorContainer = document.getElementById('monaco-editor-container');
     const themeToggleCheckbox = document.getElementById('theme-toggle-checkbox');
     const highlightThemeLink = document.getElementById('highlight-theme');
+    const topFilesList = document.getElementById('top-files-list');
+    const topFilesSection = document.getElementById('top-files-section');
+    const topFilesHeader = document.querySelector('#top-files-section .collapsible-header');
     
     // Variables
     let repoFiles = [];
@@ -908,7 +911,7 @@ document.addEventListener('DOMContentLoaded', () => {
             resultText += '# File Contents\n\n';
             
             selectedFiles.forEach(file => {
-                resultText += `## ${file.path}\n\n`;
+                resultText += `<code path=${file.path}>\n\n`;
                 
                 if (isBinaryFile(file.path)) {
                     resultText += '```\n[Binary file not shown]\n```\n\n';
@@ -918,6 +921,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     resultText += file.content;
                     resultText += '\n```\n\n';
                 }
+                resultText += `</code>\n\n`;
             });
             
             // Display the result
@@ -1261,11 +1265,12 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
         
-        // Update token estimate display with method information
-        const method = getTokenCountMethod();
-        estimatedTokenCount.textContent = `Estimated tokens: ${totalTokenCount.toLocaleString()} (${method})`;
+        estimatedTokenCount.textContent = `Estimated token count: ${totalTokenCount}`;
+        
+        // Update top 10 token used files
+        updateTopTokenFiles();
     }
-
+    
     // Update folder selected token counts based on file selection
     function updateFolderSelectedTokenCounts() {
         // Reset all folder selected token counts
@@ -1300,6 +1305,9 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Update the displayed counts without re-rendering the entire tree
         updateFolderTokenCountDisplay();
+        
+        // Update top 10 token used files
+        updateTopTokenFiles();
     }
     
     // Update the displayed token counts for all folders
@@ -1335,6 +1343,88 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Update top 10 token used files display
+    function updateTopTokenFiles() {
+        // Get selected files with token counts
+        const selectedFiles = repoFiles.filter(file => 
+            file.selected && file.tokenCount !== 'N/A' && file.tokenCount > 0
+        );
+        
+        // Sort by token count (descending)
+        selectedFiles.sort((a, b) => b.tokenCount - a.tokenCount);
+        
+        // Take top 10
+        const topFiles = selectedFiles.slice(0, 10);
+        
+        // Calculate total tokens for percentage
+        const totalTokens = selectedFiles.reduce((sum, file) => sum + file.tokenCount, 0);
+        
+        // Clear current list
+        topFilesList.innerHTML = '';
+        
+        // If no files are selected, show a message
+        if (topFiles.length === 0) {
+            topFilesList.innerHTML = '<div class="top-file-item">No files selected</div>';
+            return;
+        }
+        
+        // Add each file to the list
+        topFiles.forEach(file => {
+            const percentage = totalTokens > 0 ? ((file.tokenCount / totalTokens) * 100).toFixed(1) : 0;
+            
+            const fileItem = document.createElement('div');
+            fileItem.className = 'top-file-item';
+            
+            const filePath = document.createElement('div');
+            filePath.className = 'top-file-path';
+            filePath.textContent = file.path;
+            filePath.title = file.path; // For tooltip on hover
+            
+            const progressContainer = document.createElement('div');
+            progressContainer.className = 'top-file-progress';
+            
+            const progressBar = document.createElement('div');
+            progressBar.className = 'top-file-progress-bar';
+            progressBar.style.width = `${percentage}%`;
+            
+            const tokenCount = document.createElement('div');
+            tokenCount.className = 'top-file-tokens';
+            tokenCount.innerHTML = `${file.tokenCount.toLocaleString()} <span class="top-file-percentage">(${percentage}%)</span>`;
+            
+            progressContainer.appendChild(progressBar);
+            fileItem.appendChild(filePath);
+            fileItem.appendChild(progressContainer);
+            fileItem.appendChild(tokenCount);
+            
+            // Add click event to open the file in the editor
+            fileItem.addEventListener('click', () => {
+                showFileInEditor(file.path);
+            });
+            
+            topFilesList.appendChild(fileItem);
+        });
+    }
+
+    // Initialize collapsible sections
+    function initCollapsibleSections() {
+        // Add click event listener to the top files section header
+        if (topFilesHeader) {
+            topFilesHeader.addEventListener('click', () => {
+                topFilesSection.classList.toggle('collapsed');
+                
+                // Save collapsed state to localStorage
+                const isCollapsed = topFilesSection.classList.contains('collapsed');
+                localStorage.setItem('topFilesCollapsed', isCollapsed);
+            });
+            
+            // Restore collapsed state from localStorage
+            const isCollapsed = localStorage.getItem('topFilesCollapsed') === 'true';
+            if (isCollapsed) {
+                topFilesSection.classList.add('collapsed');
+            }
+        }
+    }
+
     // Initialize
     function init() {
         initTheme();
@@ -1342,6 +1432,9 @@ document.addEventListener('DOMContentLoaded', () => {
         statusSection.classList.add('hidden');
         fileTreeSection.classList.add('hidden');
         resultSection.classList.add('hidden');
+        
+        // Initialize collapsible sections
+        initCollapsibleSections();
     }
 
     // Update status display

@@ -911,7 +911,7 @@ document.addEventListener('DOMContentLoaded', () => {
             resultText += '# File Contents\n\n';
             
             selectedFiles.forEach(file => {
-                resultText += `<code path=${file.path}>\n\n`;
+                resultText += `<code path="${file.path}">\n\n`;
                 
                 if (isBinaryFile(file.path)) {
                     resultText += '```\n[Binary file not shown]\n```\n\n';
@@ -1391,10 +1391,21 @@ document.addEventListener('DOMContentLoaded', () => {
             tokenCount.className = 'top-file-tokens';
             tokenCount.innerHTML = `${file.tokenCount.toLocaleString()} <span class="top-file-percentage">(${percentage}%)</span>`;
             
+            // Create deselect button
+            const deselectBtn = document.createElement('button');
+            deselectBtn.className = 'deselect-file-btn';
+            deselectBtn.innerHTML = '&times;'; // × symbol
+            deselectBtn.title = 'Deselect this file';
+            deselectBtn.addEventListener('click', (e) => {
+                e.stopPropagation(); // Prevent the file item click event from firing
+                deselectFile(file.path);
+            });
+            
             progressContainer.appendChild(progressBar);
             fileItem.appendChild(filePath);
             fileItem.appendChild(progressContainer);
             fileItem.appendChild(tokenCount);
+            fileItem.appendChild(deselectBtn);
             
             // Add click event to open the file in the editor
             fileItem.addEventListener('click', () => {
@@ -1404,7 +1415,33 @@ document.addEventListener('DOMContentLoaded', () => {
             topFilesList.appendChild(fileItem);
         });
     }
-
+    
+    // Deselect a file by path
+    function deselectFile(filePath) {
+        // Find the file in repoFiles
+        const fileObj = repoFiles.find(f => f.path === filePath);
+        
+        if (fileObj) {
+            // Update the file object
+            fileObj.selected = false;
+            
+            // Update the checkbox in the file tree
+            const checkbox = document.querySelector(`input[type="checkbox"][data-path="${filePath}"]`);
+            if (checkbox) {
+                checkbox.checked = false;
+                
+                // Update parent folders
+                if (checkbox.classList.contains('file-checkbox')) {
+                    updateParentFolders(checkbox);
+                }
+            }
+            
+            // Update token counts
+            updateEstimatedTokenCount();
+            updateFolderSelectedTokenCounts();
+        }
+    }
+    
     // Initialize collapsible sections
     function initCollapsibleSections() {
         // Add click event listener to the top files section header

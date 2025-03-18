@@ -11,11 +11,10 @@
     <script src="https://unpkg.com/gpt-tokenizer/dist/cl100k_base.js"></script>
     <!-- FileSaver for saving text files -->
     <script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
-    <!-- Highlight.js for code syntax highlighting -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.8.0/styles/github.min.css" id="highlight-theme">
-    <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.8.0/highlight.min.js"></script>
     <!-- Monaco Editor -->
     <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs/loader.js"></script>
+    <!-- Debug script -->
+    <script src="js/debug.js"></script>
 </head>
 <body>
     <div class="container">
@@ -71,29 +70,24 @@
             <section id="file-tree-section" class="file-tree-section hidden">
                 <h2>Repository Files</h2>
                 <div class="file-tree-controls">
-                    <button id="select-all-btn">Select All</button>
-                    <button id="deselect-all-btn">Deselect All</button>
-                    <button id="invert-selection-btn">Invert Selection</button>
+                    <button id="select-all-btn" class="btn">Select All</button>
+                    <button id="deselect-all-btn" class="btn">Deselect All</button>
+                    <button id="invert-selection-btn" class="btn">Invert Selection</button>
                     <div class="binary-files-control">
                         <input type="checkbox" id="exclude-binary-files" checked>
-                        <label for="exclude-binary-files">Exclude binary files (images, videos, etc.)</label>
+                        <label for="exclude-binary-files">Exclude binary files</label>
                     </div>
+                </div>
+                <div id="file-tree" class="file-tree"></div>
+            </section>
+
+            <section id="top-token-files-section" class="top-token-files-section hidden">
+                <h2>Top 10 Files by Token Count</h2>
+                <div id="top-token-files" class="top-token-files"></div>
+                <div class="token-controls">
+                    <div id="token-estimate" class="token-estimate">Estimated tokens: 0</div>
                     <button id="generate-btn" class="primary-btn">Generate Text</button>
                 </div>
-                <div id="estimated-token-count" class="estimated-token-count">Estimated token count: 0</div>
-                
-                <!-- Top 10 Token Used Files Section -->
-                <div id="top-files-section" class="top-files-section">
-                    <div class="section-header collapsible-header">
-                        <h3>Top 10 Token Used Files</h3>
-                        <span class="collapse-icon">▼</span>
-                    </div>
-                    <div id="top-files-content" class="collapsible-content">
-                        <div id="top-files-list" class="top-files-list"></div>
-                    </div>
-                </div>
-                
-                <div id="file-tree" class="file-tree"></div>
             </section>
 
             <section id="result-section" class="result-section hidden">
@@ -125,6 +119,6 @@
         </div>
     </div>
 
-    <script src="app.js"></script>
+    <script type="module" src="js/main.js"></script>
 </body>
 </html>

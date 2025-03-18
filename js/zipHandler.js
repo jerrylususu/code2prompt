@@ -47,6 +47,7 @@ export async function processZipData(zipData) {
         // Get the total number of files for progress tracking
         const totalFiles = Object.keys(zip.files).length;
         let processedFiles = 0;
+        let tokenizedFiles = 0;
         
         // Reset repository files
         repoFiles = [];
@@ -76,14 +77,14 @@ export async function processZipData(zipData) {
             // Skip directories
             if (zipObj.dir) {
                 processedFiles++;
-                updateStatus(`Processing files... (${processedFiles}/${totalFiles})`, 10 + (processedFiles / totalFiles) * 80);
+                updateStatus(`Processing files... (${processedFiles}/${totalFiles})`, 10 + (processedFiles / totalFiles) * 40);
                 continue;
             }
             
             // Skip hidden files and directories
             if (isHiddenPath(path)) {
                 processedFiles++;
-                updateStatus(`Processing files... (${processedFiles}/${totalFiles})`, 10 + (processedFiles / totalFiles) * 80);
+                updateStatus(`Processing files... (${processedFiles}/${totalFiles})`, 10 + (processedFiles / totalFiles) * 40);
                 continue;
             }
             
@@ -95,8 +96,13 @@ export async function processZipData(zipData) {
                     normalizedPath = path.substring(rootFolder.length);
                 }
                 
+                processedFiles++;
+                updateStatus(`Processing files... (${processedFiles}/${totalFiles})`, 10 + (processedFiles / totalFiles) * 40);
+                
                 // Calculate token count for the file
                 const baseTokenCount = calculateFileTokenCount(content);
+                tokenizedFiles++;
+                updateStatus(`Calculating tokens... (${tokenizedFiles}/${totalFiles - Object.values(zip.files).filter(f => f.dir).length})`, 50 + (tokenizedFiles / (totalFiles - Object.values(zip.files).filter(f => f.dir).length)) * 30);
                 
                 // Add the file to the repository files
                 repoFiles.push({
@@ -107,13 +113,11 @@ export async function processZipData(zipData) {
                     selected: !isBinaryFile(normalizedPath), // Pre-select non-binary files
                     baseTokenCount: baseTokenCount // Cache the token count
                 });
-                
-                processedFiles++;
-                updateStatus(`Processing files... (${processedFiles}/${totalFiles})`, 10 + (processedFiles / totalFiles) * 80);
             }).catch(error => {
                 console.error(`Error processing file ${path}:`, error);
                 processedFiles++;
-                updateStatus(`Processing files... (${processedFiles}/${totalFiles})`, 10 + (processedFiles / totalFiles) * 80);
+                tokenizedFiles++;
+                updateStatus(`Processing files... (${processedFiles}/${totalFiles})`, 10 + (processedFiles / totalFiles) * 40);
             });
             
             promises.push(promise);

@@ -21,6 +21,11 @@ export function buildFileTreeStructure() {
     
     // Build structure
     for (const file of repoFiles) {
+        // Skip binary files completely
+        if (file.binary) {
+            continue;
+        }
+        
         const path = file.path;
         const parts = path.split('/');
         
@@ -66,6 +71,10 @@ export function buildFileTreeStructure() {
         };
     }
     
+    // Calculate folder token counts
+    calculateTotalTokenCounts(repoStructure);
+    calculateSelectedTokenCounts(repoStructure);
+    
     console.log('File tree structure built:', Object.keys(repoStructure).length, 'root items');
     return repoStructure;
 }
@@ -88,6 +97,9 @@ export function renderFileTree() {
     
     // Update folder checkboxes
     updateFolderCheckboxes();
+    
+    // Recalculate folder token counts
+    recalculateFolderTokenCounts();
     
     // Calculate token counts for all files
     updateEstimatedTokenCount();
@@ -470,24 +482,22 @@ function toggleFolder(folderElement) {
 
 // Toggle all files
 export function toggleAllFiles(selected) {
-    console.log(`Toggling all files, selected: ${selected}`);
-    
-    // Mark selection as changed
-    window.selectionChanged = true;
-    
-    // Update structure selection
-    updateStructureSelection(repoStructure, selected);
-    
-    // Update repoFiles
+    // Update all files in repoFiles
     for (const file of window.repoFiles) {
-        file.selected = selected;
+        // Skip binary files
+        if (!file.binary) {
+            file.selected = selected;
+        }
     }
+    
+    // Update structure
+    updateStructureSelection(repoStructure, selected);
     
     // Recalculate folder token counts
     recalculateFolderTokenCounts();
     
     // Update file tree
-    renderFileTree();
+    updateFileTreeSelectionState();
     
     // Update token counts
     updateEstimatedTokenCount();
@@ -495,16 +505,18 @@ export function toggleAllFiles(selected) {
     // Update top token files display
     updateTopTokenFiles();
     
-    console.log('All files toggled, UI updated');
+    // Mark selection as changed
+    window.selectionChanged = true;
 }
 
 // Invert selection
 export function invertSelection() {
-    console.log('Inverting selection');
-    
     // Invert selection for all files in repoFiles
     for (const file of window.repoFiles) {
-        file.selected = !file.selected;
+        // Skip binary files
+        if (!file.binary) {
+            file.selected = !file.selected;
+        }
     }
     
     // Invert selection in structure
@@ -514,7 +526,7 @@ export function invertSelection() {
     recalculateFolderTokenCounts();
     
     // Update file tree
-    renderFileTree();
+    updateFileTreeSelectionState();
     
     // Update token counts
     updateEstimatedTokenCount();
@@ -522,7 +534,8 @@ export function invertSelection() {
     // Update top token files display
     updateTopTokenFiles();
     
-    console.log('Selection inverted, UI updated');
+    // Mark selection as changed
+    window.selectionChanged = true;
 }
 
 // Invert structure selection (recursive)
@@ -534,37 +547,6 @@ function invertStructureSelection(node) {
             }
         } else {
             invertStructureSelection(node[key]);
-        }
-    }
-}
-
-// Update exclude binary files
-export function updateExcludeBinaryFiles() {
-    const excludeBinaryFiles = document.getElementById('exclude-binary-files').checked;
-    
-    // Update all binary files in repoFiles
-    for (const file of window.repoFiles) {
-        if (file.binary) {
-            file.selected = !excludeBinaryFiles;
-        }
-    }
-    
-    // Update structure
-    updateBinaryFilesInStructure(repoStructure, !excludeBinaryFiles);
-    
-    // Re-render file tree
-    updateFileTreeSelectionState();
-}
-
-// Update binary files in structure (recursive)
-function updateBinaryFilesInStructure(node, selected) {
-    for (const key in node) {
-        if (!key.startsWith('_')) {
-            if (node[key]._type === 'file' && node[key]._binary) {
-                node[key]._selected = selected;
-            } else {
-                updateBinaryFilesInStructure(node[key], selected);
-            }
         }
     }
 }

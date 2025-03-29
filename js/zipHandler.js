@@ -88,6 +88,16 @@ export async function processZipData(zipData) {
                 continue;
             }
             
+            // Check if it's a binary file
+            const isBinary = isBinaryFile(path);
+            
+            // Skip binary files completely
+            if (isBinary) {
+                processedFiles++;
+                updateStatus(`Processing files... (${processedFiles}/${totalFiles})`, 10 + (processedFiles / totalFiles) * 40);
+                continue;
+            }
+            
             // Process the file
             const promise = zipObj.async('string').then(content => {
                 // Remove the root folder from the path if it exists
@@ -109,8 +119,8 @@ export async function processZipData(zipData) {
                     path: normalizedPath,
                     content: content,
                     size: content.length,
-                    binary: isBinaryFile(normalizedPath),
-                    selected: !isBinaryFile(normalizedPath), // Pre-select non-binary files
+                    binary: false, // We've already skipped binary files
+                    selected: true, // All files are selected by default
                     baseTokenCount: baseTokenCount // Cache the token count
                 });
             }).catch(error => {

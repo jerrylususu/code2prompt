@@ -5,7 +5,7 @@
 import { initTheme } from './theme.js';
 import { handleGithubDownload } from './githubHandler.js';
 import { handleZipUpload, repoFiles } from './zipHandler.js';
-import { toggleAllFiles, invertSelection, updateExcludeBinaryFiles } from './fileTree.js';
+import { toggleAllFiles, invertSelection } from './fileTree.js';
 import { generateText, copyToClipboard, downloadAsText, displayResult } from './textGenerator.js';
 import { initMonacoEditor, initCloseModalButton, showFileInEditor } from './editorHandler.js';
 import { initCollapsibleSections } from './uiHelpers.js';
@@ -74,7 +74,6 @@ function initEventListeners() {
     const selectAllBtn = document.getElementById('select-all-btn');
     const deselectAllBtn = document.getElementById('deselect-all-btn');
     const invertSelectionBtn = document.getElementById('invert-selection-btn');
-    const excludeBinaryFilesCheckbox = document.getElementById('exclude-binary-files');
     const generateBtn = document.getElementById('generate-btn');
     const copyBtn = document.getElementById('copy-btn');
     const downloadTextBtn = document.getElementById('download-text-btn');
@@ -107,11 +106,6 @@ function initEventListeners() {
     // Invert selection button
     if (invertSelectionBtn) {
         invertSelectionBtn.addEventListener('click', invertSelection);
-    }
-    
-    // Exclude binary files checkbox
-    if (excludeBinaryFilesCheckbox) {
-        excludeBinaryFilesCheckbox.addEventListener('change', updateExcludeBinaryFiles);
     }
     
     // Generate button

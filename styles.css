@@ -61,6 +61,20 @@ header h1 {
     margin-bottom: 0.5rem;
 }
 
+.repo-links {
+    margin-top: 0.5rem;
+}
+
+.repo-links a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+
+.repo-links a:hover {
+    text-decoration: underline;
+}
+
 button {
     cursor: pointer;
     padding: 0.5rem 1rem;

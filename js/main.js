@@ -4,7 +4,7 @@
 
 import { initTheme } from './theme.js';
 import { handleGithubDownload } from './githubHandler.js';
-import { handleZipUpload, repoFiles } from './zipHandler.js';
+import { handleZipUpload, repoFiles, loadProjectAsExample } from './zipHandler.js';
 import { toggleAllFiles, invertSelection } from './fileTree.js';
 import { generateText, copyToClipboard, downloadAsText, displayResult } from './textGenerator.js';
 import { initMonacoEditor, initCloseModalButton, showFileInEditor } from './editorHandler.js';
@@ -77,6 +77,7 @@ function initEventListeners() {
     const generateBtn = document.getElementById('generate-btn');
     const copyBtn = document.getElementById('copy-btn');
     const downloadTextBtn = document.getElementById('download-text-btn');
+    const loadExampleBtn = document.getElementById('load-example-btn');
     
     console.log('Setting up event listeners');
     
@@ -91,6 +92,14 @@ function initEventListeners() {
         zipUploadInput.addEventListener('change', handleZipUpload);
     } else {
         console.error('ZIP upload input element not found');
+    }
+    
+    // Load example button
+    if (loadExampleBtn) {
+        console.log('Setting up Load Example button event listener');
+        loadExampleBtn.addEventListener('click', loadProjectAsExample);
+    } else {
+        console.error('Load Example button element not found');
     }
     
     // Select all button

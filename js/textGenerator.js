@@ -39,7 +39,7 @@ export function generateText() {
     for (const file of selectedFiles) {
         const language = getLanguageFromExtension(file.path);
         
-        const fileText = `\n\n<code path="${file.path}">\n\`\`\`${language}\n${file.content}\n\`\`\`</code>`;
+        const fileText = generateCodeBlockText(file.path, language, file.content);
         fileContents += fileText;
     }
     
@@ -110,6 +110,11 @@ function generateOutline(structure, indent = '', isLast = true, parentPrefixes =
     }
     
     return outline;
+}
+
+// Generate formatted code block text with proper markup
+function generateCodeBlockText(path, language, content) {
+    return `\n\n<code path="${path}">\n\`\`\`${language}\n${content}\n\`\`\`\n</code>`;
 }
 
 // Display the result with syntax highlighting
@@ -230,7 +235,7 @@ export function updateEstimatedTokenCount() {
         
         // Calculate the total token count including the markdown structure
         const language = getLanguageFromExtension(file.path);
-        const fileText = `\n\n<code path="${file.path}">\n\n\n\`\`\`${language}\n${file.content}\n\`\`\`</code>`;
+        const fileText = generateCodeBlockText(file.path, language, file.content);
         
         // Use cached token count if available
         let totalFileTokens;
@@ -289,7 +294,7 @@ export function updateTopTokenFiles() {
         // If the total token count isn't calculated yet or selection changed, calculate it now
         if (!file.tokenCount || window.selectionChanged) {
             const language = getLanguageFromExtension(file.path);
-            const fileText = `\n\n<code path="${file.path}">\n\n\n\`\`\`${language}\n${file.content}\n\`\`\`</code>`;
+            const fileText = generateCodeBlockText(file.path, language, file.content);
             file.tokenCount = estimateTokenCount(fileText);
             console.log(`Calculated total token count for ${file.path}: ${file.tokenCount}`);
         }

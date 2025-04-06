@@ -58,11 +58,37 @@ function initGptTokenizer() {
             console.log('GPT tokenizer (GPTTokenizer_cl100k_base) initialized successfully');
             // Store a reference to the encode function for easier access
             window.gptTokenizerEncode = window.GPTTokenizer_cl100k_base.encode;
+            // Set tokenizer status
+            window.tokenizerAvailable = true;
         } else {
             console.warn('GPT tokenizer (GPTTokenizer_cl100k_base) not found, will use fallback for token counting');
+            // Set tokenizer status
+            window.tokenizerAvailable = false;
+            // Show warning in UI
+            displayTokenizerWarning();
         }
     } catch (error) {
         console.error('Error initializing GPT tokenizer:', error);
+        // Set tokenizer status
+        window.tokenizerAvailable = false;
+        // Show warning in UI
+        displayTokenizerWarning();
+    }
+}
+
+// Display tokenizer warning in the status section
+function displayTokenizerWarning() {
+    // Show the status section if it's hidden
+    const statusSection = document.getElementById('status-section');
+    if (statusSection) {
+        statusSection.classList.remove('hidden');
+    }
+    
+    // Update the status message with a warning
+    const statusMessage = document.getElementById('status-message');
+    if (statusMessage) {
+        statusMessage.innerHTML = '<strong>⚠️ Warning:</strong> GPT tokenizer not available. Token counts may be inaccurate. Please check your connection or try refreshing the page.';
+        statusMessage.style.color = '#ff9800'; // Warning color
     }
 }
 

@@ -18,7 +18,11 @@ export function calculateFileTokenCount(content) {
         } else if (window.GPTTokenizer_cl100k_base && typeof window.GPTTokenizer_cl100k_base.encode === 'function') {
             // Direct access to the tokenizer
             return window.GPTTokenizer_cl100k_base.encode(content).length;
+        } else if (window.tokenizerAvailable === false) {
+            // If we've already detected tokenizer is unavailable, use fallback
+            return Math.ceil(content.split(/\s+/).length * 1.3);
         } else {
+            // First time encountering this issue, throw error to trigger warning
             throw new Error('GPT tokenizer not available for file token counting');
         }
     } catch (error) {

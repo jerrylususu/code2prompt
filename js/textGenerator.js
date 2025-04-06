@@ -10,9 +10,19 @@ export let resultText = '';
 
 // Calculate file token count (base tokens for content only, without markdown structure)
 export function calculateFileTokenCount(content) {
-    if (window.gpt3) {
-        return window.gpt3.encode(content).length;
-    } else {
+    try {
+        // Check if GPTTokenizer_cl100k_base is available
+        if (window.gptTokenizerEncode) {
+            // Use the stored reference to the encode function
+            return window.gptTokenizerEncode(content).length;
+        } else if (window.GPTTokenizer_cl100k_base && typeof window.GPTTokenizer_cl100k_base.encode === 'function') {
+            // Direct access to the tokenizer
+            return window.GPTTokenizer_cl100k_base.encode(content).length;
+        } else {
+            throw new Error('GPT tokenizer not available for file token counting');
+        }
+    } catch (error) {
+        console.error('Error using GPT tokenizer for file token counting:', error);
         // Fallback: rough estimate based on whitespace-split words
         return Math.ceil(content.split(/\s+/).length * 1.3);
     }

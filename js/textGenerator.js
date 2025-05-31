@@ -4,6 +4,7 @@
 
 import { getLanguageFromExtension, escapeHtml } from './utils.js';
 import { hasSelectedFiles, repoStructure, toggleFileSelection } from './fileTree.js';
+import { getCustomInstruction, updateCustomInstructionPreview } from './customInstructions.js';
 
 // Variables
 export let resultText = '';
@@ -57,12 +58,24 @@ export function generateText() {
         fileContents += fileText;
     }
     
-    // Combine outline and file contents
+    // Get custom instruction
+    const customInstruction = getCustomInstruction();
+    
+    // Combine outline, file contents, and custom instruction
     resultText = `# Repository Structure\n\n${outline}\n\n# Files\n${fileContents}`;
+    
+    // Add custom instruction if it exists
+    if (customInstruction) {
+        resultText += `\n\n------\n\n${customInstruction}`;
+    }
+    
     window.resultText = resultText;
     
     // Display result
     displayResult();
+    
+    // Update custom instruction preview
+    updateCustomInstructionPreview();
     
     // Show result section
     document.getElementById('result-section').classList.remove('hidden');
@@ -262,6 +275,13 @@ export function updateEstimatedTokenCount() {
         }
         
         totalTokenCount += totalFileTokens;
+    }
+    
+    // Add tokens for custom instruction if it exists
+    const customInstruction = getCustomInstruction();
+    if (customInstruction) {
+        const customInstructionText = `\n\n------\n\n${customInstruction}`;
+        totalTokenCount += estimateTokenCount(customInstructionText);
     }
     
     // Cache the calculated token count

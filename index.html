@@ -95,6 +95,15 @@
                     <div id="token-estimate" class="token-estimate">Estimated tokens: 0</div>
                     <button id="generate-btn" class="primary-btn">Generate Text</button>
                 </div>
+                <!-- Custom instruction section -->
+                <div class="custom-instruction-section">
+                    <label for="custom-instruction">Custom Instructions (appended to end):</label>
+                    <textarea id="custom-instruction" class="custom-instruction-textarea" 
+                              placeholder="Enter any custom instructions to append to the generated prompt..."></textarea>
+                    <div class="custom-instruction-help">
+                        <small>This text will be added at the end of the generated prompt. Saved automatically to localStorage.</small>
+                    </div>
+                </div>
             </section>
 
             <section id="result-section" class="result-section hidden">
@@ -104,7 +113,13 @@
                     <div class="result-actions">
                         <button id="copy-btn">Copy to Clipboard</button>
                         <button id="download-text-btn">Download as Text</button>
+                        <button id="edit-custom-instruction-btn">Edit Custom Instructions</button>
                     </div>
+                </div>
+                <!-- Custom instruction preview in result section -->
+                <div class="custom-instruction-preview hidden">
+                    <h3>Custom Instructions:</h3>
+                    <div id="custom-instruction-preview-text"></div>
                 </div>
                 <div id="result-display" class="result-display"></div>
             </section>

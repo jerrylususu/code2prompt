@@ -9,6 +9,7 @@ import { toggleAllFiles, invertSelection } from './fileTree.js';
 import { generateText, copyToClipboard, downloadAsText, displayResult } from './textGenerator.js';
 import { initMonacoEditor, initCloseModalButton, showFileInEditor } from './editorHandler.js';
 import { initCollapsibleSections } from './uiHelpers.js';
+import { initCustomInstructions } from './customInstructions.js';
 
 // Initialize global variables
 window.repoFiles = repoFiles;
@@ -37,6 +38,9 @@ function init() {
     
     // Initialize GPT tokenizer
     initGptTokenizer();
+    
+    // Initialize custom instructions
+    initCustomInstructions();
     
     // Initialize event listeners
     initEventListeners();
